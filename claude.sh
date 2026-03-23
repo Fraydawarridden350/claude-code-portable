@@ -29,18 +29,29 @@ show_help() {
   ====================
 
   Usage:
-    ./claude.sh              Launch Claude Code in current directory
-    ./claude.sh [folder]     Launch in specified folder
-    ./claude.sh update       Download the latest Claude Code version
-    ./claude.sh --help       Show this help
+    ./claude.sh                  Launch Claude Code in current directory
+    ./claude.sh [folder]         Launch in specified folder
+    ./claude.sh update           Download the latest Claude Code version
+    ./claude.sh update [version] Download a specific version (e.g. 2.1.80)
+    ./claude.sh version          Show installed version
+    ./claude.sh --help           Show this help
 
   Structure:
-    config                   API key / proxy settings (optional)
-    data/                    Portable config, auth, agents, memory
-    bin/                     Claude Code binary (auto-downloaded)
-    tmp/                     Temporary files
+    config                       API key / proxy settings (optional)
+    data/                        Portable config, auth, agents, memory
+    bin/                         Claude Code binary (auto-downloaded)
+    tmp/                         Temporary files
 
 HELP
+}
+
+check_online() {
+    # Any HTTP response (even 400) means we're online. Only connection failures mean offline.
+    if curl -sS --head --connect-timeout 5 "https://storage.googleapis.com" >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
 }
 
 detect_platform() {
@@ -78,23 +89,28 @@ detect_platform() {
 }
 
 download_claude() {
-    local platform
+    local platform pin_version="${1:-}"
     platform="$(detect_platform)"
 
-    echo "  Fetching latest version..."
     local version
-    version="$(curl -fsSL "$GCS_BUCKET/latest")"
-    if [ -z "$version" ]; then
-        echo "  [Error] Could not reach download server. Check your internet."
-        return 1
+    if [ -n "$pin_version" ]; then
+        version="$pin_version"
+        echo "  Requested: v${version} (${platform})"
+    else
+        echo "  Fetching latest version..."
+        version="$(curl -fsSL "$GCS_BUCKET/latest")"
+        if [ -z "$version" ]; then
+            echo "  [Error] Could not reach download server. Check your internet."
+            return 1
+        fi
+        echo "  Latest: v${version} (${platform})"
     fi
-    echo "  Latest: v${version} (${platform})"
 
     # Fetch checksum from manifest
     local manifest expected
     manifest="$(curl -fsSL "$GCS_BUCKET/$version/manifest.json")"
     if [ -z "$manifest" ]; then
-        echo "  [Error] Could not fetch release manifest."
+        echo "  [Error] Could not fetch release manifest. Version may not exist."
         return 1
     fi
 
@@ -153,10 +169,31 @@ download_claude() {
 # Create directories
 mkdir -p "$BIN_DIR" "$DATA_DIR" "$TMP_DIR"
 
+# Create default CLAUDE.md if missing
+if [ ! -f "$DATA_DIR/CLAUDE.md" ]; then
+    cat > "$DATA_DIR/CLAUDE.md" <<'CLAUDEMD'
+# Portable Environment
+
+This is a portable Claude Code installation. All configuration and state
+is stored in this folder's data/ directory, not in ~/.claude/.
+
+- Auto-updates are disabled. Update manually: `claude.cmd update` or `./claude.sh update`
+- Do not suggest modifying ~/.claude/ - this install uses a custom CLAUDE_CONFIG_DIR.
+CLAUDEMD
+fi
+
 # Handle commands
 case "${1:-}" in
     --help|-h)
         show_help
+        exit 0
+        ;;
+    version|--version|-v)
+        if [ -f "$BIN_DIR/.version" ]; then
+            echo "  Claude Code Portable v$(cat "$BIN_DIR/.version")"
+        else
+            echo "  Claude Code not yet downloaded. Run ./claude.sh to install."
+        fi
         exit 0
         ;;
     update)
@@ -164,8 +201,12 @@ case "${1:-}" in
         if [ -f "$BIN_DIR/.version" ]; then
             echo "  Current version: v$(cat "$BIN_DIR/.version")"
         fi
+        if ! check_online; then
+            echo "  [Error] No internet connection. Cannot update."
+            exit 1
+        fi
         rm -f "$BIN_DIR/claude"
-        download_claude
+        download_claude "${2:-}"
         echo "  Update complete!"
         exit 0
         ;;
@@ -185,6 +226,11 @@ fi
 
 # Download Claude Code if needed
 if [ ! -x "$BIN_DIR/claude" ]; then
+    if ! check_online; then
+        echo "  [Error] No internet connection. Cannot download Claude Code."
+        echo "  Connect to the internet and try again."
+        exit 1
+    fi
     download_claude
 fi
 

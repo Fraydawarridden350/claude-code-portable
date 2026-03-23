@@ -56,7 +56,17 @@ claude.cmd C:\myproject      # Windows (or drag-and-drop a folder onto claude.cm
 # Update to the latest version
 claude.cmd update
 ./claude.sh update
+
+# Pin a specific version
+claude.cmd update 2.1.80
+./claude.sh update 2.1.80
+
+# Check installed version
+claude.cmd version
+./claude.sh version
 ```
+
+Auto-updates are disabled by design. The binary stays exactly where you put it until you run `update`.
 
 ## What Gets Downloaded
 

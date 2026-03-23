@@ -26,8 +26,24 @@ if not exist "!BIN_DIR!" mkdir "!BIN_DIR!"
 if not exist "!DATA_DIR!" mkdir "!DATA_DIR!"
 if not exist "!TMP_DIR!" mkdir "!TMP_DIR!"
 
+:: ---- Create default CLAUDE.md if missing ----
+if not exist "!DATA_DIR!\CLAUDE.md" (
+    (
+        echo # Portable Environment
+        echo.
+        echo This is a portable Claude Code installation. All configuration and state
+        echo is stored in this folder's data/ directory, not in ~/.claude/.
+        echo.
+        echo - Auto-updates are disabled. Update manually: `claude.cmd update` or `./claude.sh update`
+        echo - Do not suggest modifying ~/.claude/ - this install uses a custom CLAUDE_CONFIG_DIR.
+    ) > "!DATA_DIR!\CLAUDE.md"
+)
+
 :: ---- Handle commands that don't need config ----
 if /i "%~1"=="update" goto :cmd_update
+if /i "%~1"=="version" goto :cmd_version
+if /i "%~1"=="--version" goto :cmd_version
+if /i "%~1"=="-v" goto :cmd_version
 if /i "%~1"=="--help" goto :cmd_help
 if /i "%~1"=="-h" goto :cmd_help
 
@@ -40,6 +56,13 @@ if exist "!ROOT!\config" (
 
 :: ---- Download Claude Code if needed ----
 if not exist "!BIN_DIR!\claude.exe" (
+    call :check_online
+    if errorlevel 1 (
+        echo   [Error] No internet connection. Cannot download Claude Code.
+        echo   Connect to the internet and try again.
+        pause
+        exit /b 1
+    )
     call :download_claude
     if errorlevel 1 (
         echo   [Error] Failed to download Claude Code.
@@ -55,6 +78,13 @@ if not defined GIT_BASH_PATH (
     echo   Git Bash not found on this system.
     echo   Downloading Portable Git...
     echo.
+    call :check_online
+    if errorlevel 1 (
+        echo   [Error] No internet connection. Cannot download Portable Git.
+        echo   Install Git for Windows: https://git-scm.com/download/win
+        pause
+        exit /b 1
+    )
     call :download_git
     if errorlevel 1 (
         echo.
@@ -91,21 +121,33 @@ exit /b !errorlevel!
 ::  Functions
 :: ============================================================
 
+:check_online
+:: Any HTTP response (even 400) means we're online. Only connection failures mean offline.
+curl.exe -sS --head --connect-timeout 5 "https://storage.googleapis.com" >nul 2>&1
+exit /b !errorlevel!
+
+
 :download_claude
 set "PLATFORM=win32-x64"
 if /i "!PROCESSOR_ARCHITECTURE!"=="ARM64" set "PLATFORM=win32-arm64"
 
-echo   Fetching latest version...
-for /f "usebackq delims=" %%v in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; (Invoke-WebRequest -Uri '!GCS_BUCKET!/latest' -UseBasicParsing).Content.Trim()"`) do set "VERSION=%%v"
-if not defined VERSION (
-    echo   [Error] Could not reach download server. Check your internet.
-    exit /b 1
+:: Use pinned version or fetch latest
+if defined PIN_VERSION (
+    set "VERSION=!PIN_VERSION!"
+    echo   Requested: v!VERSION! ^(!PLATFORM!^)
+) else (
+    echo   Fetching latest version...
+    for /f "usebackq delims=" %%v in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; (Invoke-WebRequest -Uri '!GCS_BUCKET!/latest' -UseBasicParsing).Content.Trim()"`) do set "VERSION=%%v"
+    if not defined VERSION (
+        echo   [Error] Could not reach download server. Check your internet.
+        exit /b 1
+    )
+    echo   Latest: v!VERSION! ^(!PLATFORM!^)
 )
-echo   Latest: v!VERSION! ^(!PLATFORM!^)
 
 for /f "usebackq delims=" %%c in (`powershell -NoProfile -ExecutionPolicy Bypass -Command "$ProgressPreference='SilentlyContinue'; $m=(Invoke-WebRequest -Uri '!GCS_BUCKET!/!VERSION!/manifest.json' -UseBasicParsing).Content | ConvertFrom-Json; $m.platforms.'!PLATFORM!'.checksum"`) do set "EXPECTED=%%c"
 if not defined EXPECTED (
-    echo   [Error] Could not fetch release manifest.
+    echo   [Error] Could not fetch release manifest. Version may not exist.
     exit /b 1
 )
 
@@ -143,6 +185,14 @@ if exist "!BIN_DIR!\.version" (
     set /p OLD_VER=<"!BIN_DIR!\.version"
     echo   Current version: v!OLD_VER!
 )
+call :check_online
+if errorlevel 1 (
+    echo   [Error] No internet connection. Cannot update.
+    pause
+    exit /b 1
+)
+:: Support pinned version: claude.cmd update 2.1.80
+if "%~2" neq "" set "PIN_VERSION=%~2"
 if exist "!BIN_DIR!\claude.exe" del "!BIN_DIR!\claude.exe"
 call :download_claude
 if errorlevel 1 (
@@ -152,6 +202,16 @@ if errorlevel 1 (
 )
 echo   Update complete!
 pause
+exit /b 0
+
+
+:cmd_version
+if exist "!BIN_DIR!\.version" (
+    set /p VER=<"!BIN_DIR!\.version"
+    echo   Claude Code Portable v!VER!
+) else (
+    echo   Claude Code not yet downloaded. Run claude.cmd to install.
+)
 exit /b 0
 
 
@@ -225,16 +285,18 @@ echo   Claude Code Portable
 echo   ====================
 echo.
 echo   Usage:
-echo     claude.cmd              Launch Claude Code in current directory
-echo     claude.cmd [folder]     Launch in folder (drag-and-drop supported)
-echo     claude.cmd update       Download the latest Claude Code version
-echo     claude.cmd --help       Show this help
+echo     claude.cmd                  Launch Claude Code in current directory
+echo     claude.cmd [folder]         Launch in folder (drag-and-drop supported)
+echo     claude.cmd update           Download the latest Claude Code version
+echo     claude.cmd update [version] Download a specific version (e.g. 2.1.80)
+echo     claude.cmd version          Show installed version
+echo     claude.cmd --help           Show this help
 echo.
 echo   Structure:
-echo     config                  API key / proxy settings (optional)
-echo     data\                   Portable config, auth, agents, memory
-echo     bin\                    Claude Code binary (auto-downloaded)
-echo     git\                    Portable Git (auto-downloaded if needed)
-echo     tmp\                    Temporary files
+echo     config                      API key / proxy settings (optional)
+echo     data\                       Portable config, auth, agents, memory
+echo     bin\                        Claude Code binary (auto-downloaded)
+echo     git\                        Portable Git (auto-downloaded if needed)
+echo     tmp\                        Temporary files
 echo.
 exit /b 0
