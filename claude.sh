@@ -98,7 +98,7 @@ download_claude() {
         return 1
     fi
 
-    # Parse JSON — try python3, jq, then grep fallback
+    # Parse JSON - try python3, jq, then grep fallback
     if command -v python3 &>/dev/null; then
         expected="$(echo "$manifest" | python3 -c "import sys,json; print(json.load(sys.stdin)['platforms']['$platform']['checksum'])")"
     elif command -v jq &>/dev/null; then
@@ -171,7 +171,7 @@ case "${1:-}" in
         ;;
 esac
 
-# Load config if it exists (optional — OAuth works without it)
+# Load config if it exists (optional - OAuth works without it)
 if [ -f "$ROOT/config" ]; then
     while IFS='=' read -r key value; do
         case "$key" in

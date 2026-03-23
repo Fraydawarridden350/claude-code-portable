@@ -31,7 +31,7 @@ if /i "%~1"=="update" goto :cmd_update
 if /i "%~1"=="--help" goto :cmd_help
 if /i "%~1"=="-h" goto :cmd_help
 
-:: ---- Load config if it exists (optional — OAuth works without it) ----
+:: ---- Load config if it exists (optional - OAuth works without it) ----
 if exist "!ROOT!\config" (
     for /f "usebackq eol=# tokens=1,* delims==" %%a in ("!ROOT!\config") do (
         if not "%%b"=="" set "%%a=%%b"

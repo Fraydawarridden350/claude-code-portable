@@ -1,6 +1,6 @@
 # Claude Code Portable
 
-Run [Claude Code](https://docs.anthropic.com/en/docs/claude-code) from a USB drive or any folder — no installation required. Works on Windows, macOS, and Linux.
+Run [Claude Code](https://docs.anthropic.com/en/docs/claude-code) from a USB drive or any folder - no installation required. Works on Windows, macOS, and Linux.
 
 ## Quick Start
 
@@ -23,20 +23,20 @@ The launcher scripts download the official Claude Code binary from Anthropic's s
 | `data/` | Auto-created | Config, credentials, agents, rules, memory |
 | `tmp/` | Auto-created | Temporary files |
 | `git/` | Auto-created (Windows) | Portable Git (if not installed on system) |
-| `config` | You create (optional) | API key, proxy URL — see `config.example` |
+| `config` | You create (optional) | API key, proxy URL - see `config.example` |
 
 **Nothing is written outside this folder.** Plug the drive into another machine and pick up where you left off.
 
 ## Authentication
 
-**Option A — Claude account (easiest):** Just run the launcher. Claude Code opens your browser to log in. Credentials are stored in `data/` on the drive.
+**Option A - Claude account (easiest):** Just run the launcher. Claude Code opens your browser to log in. Credentials are stored in `data/` on the drive.
 
-**Option B — API key:** Copy `config.example` to `config` and add your key:
+**Option B - API key:** Copy `config.example` to `config` and add your key:
 ```
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-**Option C — Proxy / gateway:** Set a custom base URL in the config:
+**Option C - Proxy / gateway:** Set a custom base URL in the config:
 ```
 ANTHROPIC_API_KEY=your-key
 ANTHROPIC_BASE_URL=https://your-proxy.example.com
