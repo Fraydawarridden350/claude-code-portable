@@ -97,6 +97,15 @@ if not defined GIT_BASH_PATH (
     call :find_git_bash
 )
 
+:: ---- Offline banner ----
+call :check_online
+if errorlevel 1 (
+    echo   [Offline] No internet connection detected.
+    echo   Claude Code will run, but authentication and API calls may fail
+    echo   if your credentials have expired.
+    echo.
+)
+
 :: ---- Set portable environment ----
 set "CLAUDE_CONFIG_DIR=!DATA_DIR!"
 set "CLAUDE_CODE_TMPDIR=!TMP_DIR!"

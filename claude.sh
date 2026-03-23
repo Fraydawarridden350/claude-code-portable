@@ -234,6 +234,14 @@ if [ ! -x "$BIN_DIR/claude" ]; then
     download_claude
 fi
 
+# Offline banner
+if ! check_online; then
+    echo "  [Offline] No internet connection detected."
+    echo "  Claude Code will run, but authentication and API calls may fail"
+    echo "  if your credentials have expired."
+    echo
+fi
+
 # Set portable environment
 export CLAUDE_CONFIG_DIR="$DATA_DIR"
 export CLAUDE_CODE_TMPDIR="$TMP_DIR"
