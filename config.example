@@ -1,0 +1,21 @@
+# Claude Code Portable - Configuration (OPTIONAL)
+#
+# This file is NOT required. Without it, Claude Code will open your
+# browser to log in with your Claude account (Pro/Max/Teams).
+# Your login persists in the data/ folder on this drive.
+#
+# Only create a "config" file if you need one of these:
+#   - API key authentication (instead of browser login)
+#   - Custom API proxy / base URL
+#   - Auth token for gateway setups
+#
+# To use: copy this file to "config" (no extension) and uncomment what you need.
+
+# API key from https://console.anthropic.com/
+# ANTHROPIC_API_KEY=sk-ant-...
+
+# Custom API base URL (proxies, gateways, etc.)
+# ANTHROPIC_BASE_URL=https://api.anthropic.com
+
+# Auth token (alternative to API key, for some proxy setups)
+# ANTHROPIC_AUTH_TOKEN=

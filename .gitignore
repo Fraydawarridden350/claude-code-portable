@@ -1,0 +1,15 @@
+# Downloaded binaries and runtimes
+bin/
+git/
+tmp/
+
+# User config (contains API keys)
+config
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Data directory (user's portable state)
+data/
